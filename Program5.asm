@@ -52,25 +52,25 @@ loop1		LDI R2, Input_ADDR	;R2 = contents of x4600
 		
 ;start of branch algorithm checks
 ;case 1: array empty
-		LD R4, array_pointer	
-		LDR R0, R4, 0		
-		BRzp case2		
-		LD R0, nascii_A			
+		LD R4, array_pointer	;R4 = x3000 (start of array)
+		LDR R0, R4, 0		;RO = first index contents
+		BRzp case2		;will only fall through if R0 = -1 but jumps to case 2 if not -1
+		LD R0, nascii_A		;now R0 = -65		
 		ADD R3, R2, R0
-		BRnp loop		
-		STR R2, R4, 0			
+		BRnp loop		;if not zero --> the character is not A so don't store to array
+		STR R2, R4, 0		;stores A to first index of array--> now array contains A	
 		BRnzp loop
 
 ;case2: array currently has A
-case2		LDR R3, R4, 1		
-		BRzp case3		
-		LD R0, nascii_U 	
+case2		LDR R3, R4, 1		;R3 = contents in second index
+		BRzp case3		;if -1 fall through and write U; otherwise already has AU and goes to case3
+		LD R0, nascii_U 	;R0 = -85
 		ADD R3, R2, R0
-		BRnp isinputA		
-		STR R2, R4, 1		
+		BRnp isinputA		;if neg/pos result then input is not U--> need to test if it is A
+		STR R2, R4, 1		;now array contains A-U
 		BRnzp loop
 
-isinputA	LD R0, nascii_A		
+isinputA	LD R0, nascii_A		;R0 = -65
 		ADD R3, R2, R0
 		BRz zerothindexisA
 		BRnzp cleararray
