@@ -106,31 +106,30 @@ loop_2		LDI R2, Input_ADDR	;R2 = contents of x4600
 		BRz loop_2		;if x4600 has 0 then keep looking for valid character
 		ADD R0, R2, #0		;now R0 = R2
 		TRAP x21		;prints character to console		
-	
 		
 ;case1 should only store U to first index if array is empty 
-		LDR R0, R4, 3		
-		BRzp case_2		
-		LD R0, nascii_U		
+		LDR R0, R4, 3		;R0 has zeroth index
+		BRzp case_2		;if not -1 --> array already has U so branch to case_2
+		LD R0, nascii_U		;R0 = -85
 		ADD R3, R2, R0
 		BRnp clearstoparray
-		STR R2, R4, 3		
+		STR R2, R4, 3		;if input is U then store to zeroth index of array
 		BRnzp loop2
 
 ;case_2 (can only run if array only has U right now) should only store the input if it is A or G
-case_2		LDR R0, R4, 4		
-		BRzp case_3		
-		LD R0, nascii_A		
+case_2		LDR R0, R4, 4		;R0 is the first index of stop array
+		BRzp case_3		;will branch to case_3 if array already has UA or UG
+		LD R0, nascii_A		;R0 = -65
 		ADD R3, R2, R0
-		BRz writesecond		
-		LD R0, nascii_G		
+		BRz writesecond		;branch to writesecond case
+		LD R0, nascii_G		;R0 = -67
 		ADD R3, R2, R0
-		BRz writesecond		
-		BRnp isinputU		
-writesecond	STR R2, R4, 4		
+		BRz writesecond		;branch to writesecond case
+		BRnp isinputU		;if result neg/pos then second letter isi not A or G but need to check if it is U
+writesecond	STR R2, R4, 4		;stores the A or G into first index of stop array
 		BRnzp loop2
 
-isinputU	LD R0, nascii_U		
+isinputU	LD R0, nascii_U		;R0 = -85
 		ADD R3, R2, R0
 		BRz zerothindexisU
 		BRnzp clearstoparray
