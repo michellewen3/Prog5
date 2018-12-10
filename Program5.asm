@@ -135,35 +135,35 @@ isinputU	LD R0, nascii_U		;R0 = -85
 		BRnzp clearstoparray
 
 ;case_3(can only run if array already has either UA or UG) and should only store if it makes UAG, UAA, or UGA stop codon
-case_3		LDR R0, R4, 4		
-		LD R3, nascii_A		
+case_3		LDR R0, R4, 4		;R0 has the first index of the stop array
+		LD R3, nascii_A		;R3 = -65
 		ADD R5, R0, R3
-		BRz secondisA		
-		ADD R5, R2, R3		
-		BRnp isinputU		
-		STR R2, R4, 5		
+		BRz secondisA		;branches if it is UA in array
+		ADD R5, R2, R3		;at this point in the code the stop array must contain UG so check if third letter is A
+		BRnp isinputU		;taking branch means that the third letter is NOT A so need to check if it is U before clearing	
+		STR R2, R4, 5		;STOP CODON FOUND AS UGA
 		BRnzp DONE		
 
 ;at this point in code the array must contain UA and we are checking the third letter
 secondisA	ADD R5, R2, R3
 		BRnp checkG
-		STR R2, R4, 5		
+		STR R2, R4, 5		;STOP CODON FOUND IS UAA
 		BRnzp DONE
-checkG		LD R3, nascii_G		
+checkG		LD R3, nascii_G		;R3 = -71
 		ADD R5, R2, R3
-		BRnp isinputU		
-		STR R2, R4, 5		
+		BRnp isinputU		;third letter is not A or G so need to check if it is U
+		STR R2, R4, 5		;STOP CODON FOUND IS UAG
 		BRnzp DONE
 	
 
-DONE		AND R0, R0, #0		
+DONE		AND R0, R0, #0		;BOTH START AND STOP CODON ARRAYS ARE CLEARED BEFORE EXITING PROGRAM
 		ADD R0, R0, #-1
-		STR R0, R4, 0
-		STR R0, R4, 1		
-		STR R0, R4, 2	
-		STR R0, R4, 3		
-		STR R0, R4, 4	
-		STR R0, R4, 5		
+		STR R0, R4, 0		;array zero index is initialized to -1
+		STR R0, R4, 1		;array first index is initialized to -1
+		STR R0, R4, 2		;array second index is initialized to -1
+		STR R0, R4, 3		;stop array zeroth index is initialized to -1
+		STR R0, R4, 4		;stop array first index is initialized to -1
+		STR R0, R4, 5		;stop array second index is initialized to -1
 		TRAP x25
 
 stack_start .FILL x2600
