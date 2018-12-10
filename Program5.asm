@@ -76,36 +76,36 @@ isinputA	LD R0, nascii_A		;R0 = -65
 		BRnzp cleararray
 
 ;case3; array currently has AU
-case3		LD R0, nascii_G 	
+case3		LD R0, nascii_G 	;R0 = -71
 		ADD R3, R2, R0
-		BRnp isinputA		
-		STR R2, R4, 2		
-		LD R0, ascii_pipe	
+		BRnp isinputA		;if result neg/pos ---> the character input is not 'U' so check if it is A
+		STR R2, R4, 2		;now array contains A-U-G
+		LD R0, ascii_pipe	;R0 = 124
 		TRAP x21
 		BRnzp clearstoparray
 
 zerothindexisU  AND R0, R0, #0
 		ADD R0, R0, #-1
-		STR R2, R4, 3		
-		STR R0, R4, 4		
-		STR R0, R4, 5		
+		STR R2, R4, 3		;stop array zero index is set to 'U'
+		STR R0, R4, 4		;stop array first index is initialized to -1
+		STR R0, R4, 5		;stop array second index is initialized to -1
 		BRnzp loop2
 
 clearstoparray	AND R0, R0, #0
-		ADD R0, R0, #-1		
-		STR R0, R4, 3		
-		STR R0, R4, 4		
-		STR R0, R4, 5		
+		ADD R0, R0, #-1		;R0 = -1
+		STR R0, R4, 3		;stop array zeroth index is initialized to -1
+		STR R0, R4, 4		;stop array first index is initialized to -1
+		STR R0, R4, 5		;stop array second index is initialized to -1
 
 
 ;loop2: at this point in the code, it starts the actual coding sequence and we only need to check for stop codons
 loop2		AND R0, R0, #0
-		STI R0, Input_ADDR	
+		STI R0, Input_ADDR	;clear x4600 to 0 if looping back from processing code
 
-loop_2		LDI R2, Input_ADDR	
-		BRz loop_2		
-		ADD R0, R2, #0		
-		TRAP x21		
+loop_2		LDI R2, Input_ADDR	;R2 = contents of x4600
+		BRz loop_2		;if x4600 has 0 then keep looking for valid character
+		ADD R0, R2, #0		;now R0 = R2
+		TRAP x21		;prints character to console		
 	
 		
 ;case1 should only store U to first index if array is empty 
